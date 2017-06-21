@@ -27,4 +27,10 @@ Route::group(['prefix' => 'v1'], function() {
             'update' => 'api.v1.books.update',
         ]
     ]);
+    
+    Route::resource('libraries', 'Api\LibraryController', [
+        'names' => [
+            'store' => 'api.v1.libraries.store',
+        ]
+    ]);
 });
