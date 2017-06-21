@@ -30,5 +30,8 @@ class ApiServiceProvider extends ServiceProvider
         App::bind('App\Libraries\Api\AuthTokenGenerator', function(){
             return new App\Libraries\Api\AuthTokenGenerator();
         });
+        App::bind('App\Libraries\Api\AuthByToken', function(){
+            return new App\Libraries\Api\AuthByToken();
+        });
     }
 }

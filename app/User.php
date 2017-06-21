@@ -4,6 +4,7 @@ namespace App;
 
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use App\Listeners\UserCreatingListener;
 
 class User extends Authenticatable
 {
@@ -25,5 +26,14 @@ class User extends Authenticatable
      */
     protected $hidden = [
         'password_hash', 'remember_token',
+    ];
+    
+    /**
+     * The event map for the model.
+     *
+     * @var array
+     */
+    protected $events = [
+        'creating' => UserCreatingListener::class
     ];
 }

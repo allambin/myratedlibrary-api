@@ -6,6 +6,7 @@ use Closure;
 use App\Libraries\Api\MessageFormatter;
 use App\Libraries\Api\ResponseErrorCode;
 use Validator;
+use Auth;
 
 class TokenAuthentication
 {
@@ -36,8 +37,9 @@ class TokenAuthentication
         }
         
         $authToken = \App\AuthToken::where('token', $request['auth_token'])->first();
+        $user = \App\User::where('id', $authToken->user_id);
         
-        if(!$authToken) {
+        if(!$authToken || !$user) {
             return response()->json(
                     $this->messageFormatter->formatErrorMessage(
                             ['auth_token' => 'This token is invalid.'], 
