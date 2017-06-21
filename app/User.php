@@ -36,4 +36,14 @@ class User extends Authenticatable
     protected $events = [
         'creating' => UserCreatingListener::class
     ];
+    
+    /**
+     * Check if this user can edit this book
+     * @param \App\Book $book
+     * @return boolean
+     */
+    public function canEditBook(Book $book)
+    {
+        return $book->user_id == $this->id;
+    }
 }

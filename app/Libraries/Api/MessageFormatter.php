@@ -19,8 +19,14 @@ class MessageFormatter
             case ResponseErrorCode::EXPIRED_TOKEN:
                 $message = "The token has expired. Please sign in again.";
                 break;
+            case ResponseErrorCode::UNAUTHORIZED:
+                $message = "You are not authorized to perform this action.";
+                break;
+            case ResponseErrorCode::NOT_FOUND:
+                $message = "The resource was not found.";
+                break;
             default:
-                $message = "Unknown error";
+                $message = "Unknown error.";
                 break;
         }
         

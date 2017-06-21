@@ -8,4 +8,6 @@ class ResponseErrorCode
     const LOGIN_FAILED = 2;
     const INVALID_TOKEN = 3;
     const EXPIRED_TOKEN = 4;
+    const UNAUTHORIZED = 5;
+    const NOT_FOUND = 6;
 }
