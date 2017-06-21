@@ -10,6 +10,9 @@ class MessageFormatter
             case ResponseErrorCode::VALIDATION_FAILED:
                 $message = "Validation failed";
                 break;
+            case ResponseErrorCode::LOGIN_FAILED:
+                $message = "Login failed";
+                break;
             default:
                 $message = "Unknown error";
                 break;
