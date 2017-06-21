@@ -46,4 +46,14 @@ class User extends Authenticatable
     {
         return $book->user_id == $this->id;
     }
+    
+    /**
+     * Check if this user can edit this library
+     * @param \App\Book $book
+     * @return boolean
+     */
+    public function canEditLibrary(Library $library)
+    {
+        return $library->user_id == $this->id;
+    }
 }

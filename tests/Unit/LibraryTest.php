@@ -83,4 +83,71 @@ class LibraryTest extends TestCase
             ]
         ]);
     }
+    
+    public function testShouldUpdateLibrary()
+    {
+        $library = \App\Library::create([
+            'id' => 30,
+            'name' => 'Fantasy',
+            'user_id' => $this->user->id
+        ]);
+        
+        \App\Library::reguard();
+        $response = $this->put(route('api.v1.libraries.update', ['id' => $library->id]), [
+            'auth_token' => $this->token,
+            'name' => 'Fantasy - updated',
+        ]);
+        
+        $response->assertJsonFragment([
+            'id' => 30,
+            'name' => 'Fantasy - updated',
+        ]);
+    }
+    
+    public function testShouldFailUpdatOtherUsereLibrary()
+    {
+        \App\User::unguard();
+        $user2 = \App\User::create([
+            'id' => 4,
+            'email' => 'test2@email.com',
+            'password' => 'password'
+        ]);
+        
+        $library = \App\Library::create([
+            'id' => 30,
+            'name' => 'Fantasy',
+            'user_id' => $user2->id
+        ]);
+        
+        \App\Library::reguard();
+        $response = $this->put(route('api.v1.libraries.update', ['id' => $library->id]), [
+            'auth_token' => $this->token,
+            'name' => 'Fantasy - updated',
+        ]);
+        
+        $response->assertExactJson([
+            'code' => 400,
+            'message' => 'You are not authorized to perform this action.',
+            'errors' => [
+                'library' => 'Unauthorized action.'
+            ]
+        ]);
+    }
+    
+    public function testShouldFailUpdatWithUnknownLibrary()
+    {
+        \App\Library::reguard();
+        $response = $this->put(route('api.v1.libraries.update', ['id' => 99]), [
+            'auth_token' => $this->token,
+            'name' => 'Fantasy - updated',
+        ]);
+        
+        $response->assertExactJson([
+            'code' => 400,
+            'message' => 'The resource was not found.',
+            'errors' => [
+                'library' => 'Not found.'
+            ]
+        ]);
+    }
 }
