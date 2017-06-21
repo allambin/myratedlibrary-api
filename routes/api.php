@@ -20,4 +20,11 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 Route::group(['prefix' => 'v1'], function() {
     Route::post('auth/register', 'Api\Auth\Registercontroller@register')->name('api.v1.auth.register');
     Route::post('auth/login', 'Api\Auth\Logincontroller@login')->name('api.v1.auth.login');
+//    ->middleware('auth')
+    
+    Route::resource('books', 'Api\BookController', [
+        'names' => [
+            'store' => 'api.v1.books.store',
+        ]
+    ]);
 });

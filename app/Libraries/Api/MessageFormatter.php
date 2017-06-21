@@ -13,6 +13,12 @@ class MessageFormatter
             case ResponseErrorCode::LOGIN_FAILED:
                 $message = "Login failed";
                 break;
+            case ResponseErrorCode::INVALID_TOKEN:
+                $message = "Token invalid";
+                break;
+            case ResponseErrorCode::EXPIRED_TOKEN:
+                $message = "The token has expired. Please sign in again.";
+                break;
             default:
                 $message = "Unknown error";
                 break;
