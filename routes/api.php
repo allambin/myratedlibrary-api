@@ -28,6 +28,7 @@ Route::group(['prefix' => 'v1'], function() {
         ]
     ]);
     
+    Route::patch('libraries/{id}', 'Api\LibraryController@patch')->name('api.v1.libraries.patch');
     Route::resource('libraries', 'Api\LibraryController', [
         'names' => [
             'store' => 'api.v1.libraries.store',

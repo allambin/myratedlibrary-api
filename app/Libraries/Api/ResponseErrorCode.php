@@ -10,4 +10,5 @@ class ResponseErrorCode
     const EXPIRED_TOKEN = 4;
     const UNAUTHORIZED = 5;
     const NOT_FOUND = 6;
+    const IMMUTABLE_FIELD = 7;
 }

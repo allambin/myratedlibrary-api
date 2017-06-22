@@ -25,6 +25,9 @@ class MessageFormatter
             case ResponseErrorCode::NOT_FOUND:
                 $message = "The resource was not found.";
                 break;
+            case ResponseErrorCode::IMMUTABLE_FIELD:
+                $message = "The resource cannot be patched this way.";
+                break;
             default:
                 $message = "Unknown error.";
                 break;

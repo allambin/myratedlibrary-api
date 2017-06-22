@@ -150,4 +150,57 @@ class LibraryTest extends TestCase
             ]
         ]);
     }
+    
+    public function testShouldSetLibraryPublic()
+    {
+        $library = \App\Library::create([
+            'id' => 30,
+            'name' => 'Fantasy',
+            'user_id' => $this->user->id
+        ]);
+        
+        \App\Library::reguard();
+        $response = $this->patch(route('api.v1.libraries.patch', ['id' => $library->id]), [
+            'auth_token' => $this->token,
+            'is_public' => 1
+        ]);
+        
+        $response->assertJson([
+            'original' => [
+                'id' => 30,
+                'name' => 'Fantasy',
+                'is_public' => 0,
+                'user_id' => 3
+            ],
+            'patched' => [
+                'id' => 30,
+                'name' => 'Fantasy',
+                'is_public' => 1,
+                'user_id' => 3
+            ]
+        ]);
+    }
+    
+    public function testShouldFailToPatchLibraryWithWrongField()
+    {
+        $library = \App\Library::create([
+            'id' => 30,
+            'name' => 'Fantasy',
+            'user_id' => $this->user->id
+        ]);
+        
+        \App\Library::reguard();
+        $response = $this->patch(route('api.v1.libraries.patch', ['id' => $library->id]), [
+            'auth_token' => $this->token,
+            'test' => 1
+        ]);
+        
+        $response->assertExactJson([
+            'code' => 400,
+            'message' => 'The resource cannot be patched this way.',
+            'errors' => [
+                'library' => 'This field cannot be modified.'
+            ]
+        ]);
+    }
 }
