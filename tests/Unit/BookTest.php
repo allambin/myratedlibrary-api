@@ -43,7 +43,7 @@ class BookTest extends TestCase
         $this->assertEquals(401, $response->status());
         $response->assertExactJson([
             'code' => 401,
-            'message' => 'Validation failed',
+            'message' => 'Validation failed.',
             'errors' => [
                 'auth_token' => [
                     'The auth token field is required.'
@@ -80,7 +80,7 @@ class BookTest extends TestCase
         $this->assertEquals(400, $response->status());
         $response->assertExactJson([
             'code' => 400,
-            'message' => 'Validation failed',
+            'message' => 'Validation failed.',
             'errors' => [
                 'title' => [
                     'The title field is required.'
@@ -136,7 +136,7 @@ class BookTest extends TestCase
         ]);
         
         $response->assertExactJson([
-            'code' => 400,
+            'code' => 401,
             'message' => 'You are not authorized to perform this action.',
             'errors' => [
                 'book' => 'Unauthorized action.'
@@ -154,7 +154,7 @@ class BookTest extends TestCase
         ]);
         
         $response->assertExactJson([
-            'code' => 400,
+            'code' => 404,
             'message' => 'The resource was not found.',
             'errors' => [
                 'book' => 'Not found.'

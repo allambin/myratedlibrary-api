@@ -43,7 +43,7 @@ class LibraryTest extends TestCase
         
         $response->assertExactJson([
             'code' => 401,
-            'message' => 'Validation failed',
+            'message' => 'Validation failed.',
             'errors' => [
                 'auth_token' => [
                     'The auth token field is required.'
@@ -75,7 +75,7 @@ class LibraryTest extends TestCase
         
         $response->assertExactJson([
             'code' => 400,
-            'message' => 'Validation failed',
+            'message' => 'Validation failed.',
             'errors' => [
                 'name' => [
                     'The name field is required.'
@@ -126,7 +126,7 @@ class LibraryTest extends TestCase
         ]);
         
         $response->assertExactJson([
-            'code' => 400,
+            'code' => 401,
             'message' => 'You are not authorized to perform this action.',
             'errors' => [
                 'library' => 'Unauthorized action.'
@@ -143,7 +143,7 @@ class LibraryTest extends TestCase
         ]);
         
         $response->assertExactJson([
-            'code' => 400,
+            'code' => 404,
             'message' => 'The resource was not found.',
             'errors' => [
                 'library' => 'Not found.'

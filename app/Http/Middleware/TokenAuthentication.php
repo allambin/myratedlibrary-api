@@ -28,10 +28,10 @@ class TokenAuthentication
         $validation = $this->validator($request->all());
         if ($validation->fails()) {
             return response()->json(
-                    $this->messageFormatter->formatErrorMessage(
-                            $validation->messages(), 
-                            ResponseErrorCode::VALIDATION_FAILED,
-                            $statusCode),
+                        $this->messageFormatter->formatErrorMessage(ResponseErrorCode::VALIDATION_FAILED, 
+                        $validation->messages(),
+                        $statusCode
+                    ),
                     $statusCode
                 );
         }
@@ -41,10 +41,7 @@ class TokenAuthentication
         
         if(!$authToken || !$user) {
             return response()->json(
-                    $this->messageFormatter->formatErrorMessage(
-                            ['auth_token' => 'This token is invalid.'], 
-                            ResponseErrorCode::INVALID_TOKEN,
-                            $statusCode),
+                    $this->messageFormatter->formatErrorMessage(ResponseErrorCode::INVALID_TOKEN, 'auth_token'),
                     $statusCode
                 );
         }
@@ -53,10 +50,7 @@ class TokenAuthentication
         $validityDate = new \DateTime($authToken->valid_until);
         if($now > $validityDate) {
             return response()->json(
-                    $this->messageFormatter->formatErrorMessage(
-                            ['auth_token' => 'This token has expired..'],
-                            ResponseErrorCode::EXPIRED_TOKEN,
-                            $statusCode),
+                    $this->messageFormatter->formatErrorMessage(ResponseErrorCode::INVALID_TOKEN, 'auth_token'),
                     $statusCode
                 );
         }

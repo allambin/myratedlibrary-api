@@ -28,9 +28,8 @@ class RegisterController extends Controller
         $validation = $this->validator($request->all());
         
         if ($validation->fails()) {
-            $errors = $validation->messages();
             return response()->json(
-                    $this->messageFormatter->formatErrorMessage($errors, ResponseErrorCode::VALIDATION_FAILED),
+                    $this->messageFormatter->formatErrorMessage(ResponseErrorCode::VALIDATION_FAILED, $validation->messages()),
                     400
                 );
         }

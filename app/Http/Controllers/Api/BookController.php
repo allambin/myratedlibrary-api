@@ -29,7 +29,7 @@ class BookController extends Controller
         $validation = $this->validator($request->all());
         if ($validation->fails()) {
             return response()->json(
-                    $this->messageFormatter->formatErrorMessage($validation->messages(), ResponseErrorCode::VALIDATION_FAILED),
+                    $this->messageFormatter->formatErrorMessage(ResponseErrorCode::VALIDATION_FAILED, $validation->messages()),
                     400
                 );
         }
@@ -53,7 +53,7 @@ class BookController extends Controller
         $validation = $this->validator($request->all());
         if ($validation->fails()) {
             return response()->json(
-                    $this->messageFormatter->formatErrorMessage($validation->messages(), ResponseErrorCode::VALIDATION_FAILED),
+                    $this->messageFormatter->formatErrorMessage(ResponseErrorCode::VALIDATION_FAILED, $validation->messages()),
                     400
                 );
         }
@@ -61,7 +61,7 @@ class BookController extends Controller
         $book = \App\Book::find($id);
         if(!$book) {
             return response()->json(
-                    $this->messageFormatter->formatErrorMessage(['book' => 'Not found.'], ResponseErrorCode::NOT_FOUND),
+                    $this->messageFormatter->formatErrorMessage(ResponseErrorCode::NOT_FOUND, 'book'),
                     400
                 );
         }
@@ -69,7 +69,7 @@ class BookController extends Controller
         $user = AuthByToken::user(\App\AuthToken::where('token', $request['auth_token'])->firstOrFail());
         if(!$user->canEditBook($book)) {
             return response()->json(
-                    $this->messageFormatter->formatErrorMessage(['book' => 'Unauthorized action.'], ResponseErrorCode::UNAUTHORIZED),
+                    $this->messageFormatter->formatErrorMessage(ResponseErrorCode::UNAUTHORIZED, 'book'),
                     400
                 );
         }

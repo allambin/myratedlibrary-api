@@ -26,7 +26,7 @@ class LoginController extends Controller
         $validation = $this->validator($request->all());
         if ($validation->fails()) {
             return response()->json(
-                    $this->messageFormatter->formatErrorMessage($validation->messages(), ResponseErrorCode::VALIDATION_FAILED),
+                    $this->messageFormatter->formatErrorMessage(ResponseErrorCode::VALIDATION_FAILED, $validation->messages()),
                     400
                 );
         }
@@ -34,7 +34,7 @@ class LoginController extends Controller
         $user = \App\User::where('email', $request['email'])->first();
         if (!$user || password_verify($request['password'], $user->password_hash) === false) {
             return response()->json(
-                    $this->messageFormatter->formatErrorMessage(['user' => 'Wrong email/password.'], ResponseErrorCode::LOGIN_FAILED),
+                    $this->messageFormatter->formatErrorMessage(ResponseErrorCode::LOGIN_FAILED, 'user'),
                     401
                 );
         }

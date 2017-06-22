@@ -29,7 +29,7 @@ class LibraryController extends Controller
         $validation = $this->validator($request->all());
         if ($validation->fails()) {
             return response()->json(
-                    $this->messageFormatter->formatErrorMessage($validation->messages(), ResponseErrorCode::VALIDATION_FAILED),
+                    $this->messageFormatter->formatErrorMessage(ResponseErrorCode::VALIDATION_FAILED, $validation->messages()),
                     400
                 );
         }
@@ -53,7 +53,7 @@ class LibraryController extends Controller
         $validation = $this->validator($request->all());
         if ($validation->fails()) {
             return response()->json(
-                    $this->messageFormatter->formatErrorMessage($validation->messages(), ResponseErrorCode::VALIDATION_FAILED),
+                    $this->messageFormatter->formatErrorMessage(ResponseErrorCode::VALIDATION_FAILED, $validation->messages()),
                     400
                 );
         }
@@ -61,15 +61,15 @@ class LibraryController extends Controller
         $library = \App\Library::find($id);
         if(!$library) {
             return response()->json(
-                    $this->messageFormatter->formatErrorMessage(['library' => 'Not found.'], ResponseErrorCode::NOT_FOUND),
+                    $this->messageFormatter->formatErrorMessage(ResponseErrorCode::NOT_FOUND, 'library'),
                     400
                 );
         }
         
         if(!$this->isUserAuthorizedToUpdate($request['auth_token'], $library)) {
             return response()->json(
-                    $this->messageFormatter->formatErrorMessage(['library' => 'Unauthorized action.'], ResponseErrorCode::UNAUTHORIZED),
-                    400
+                    $this->messageFormatter->formatErrorMessage(ResponseErrorCode::UNAUTHORIZED, 'library'),
+                    401
                 );
         }
         
@@ -90,7 +90,7 @@ class LibraryController extends Controller
     {
         if(!in_array('is_public', array_keys($request->all()))) {
             return response()->json(
-                    $this->messageFormatter->formatErrorMessage(['library' => 'This field cannot be modified.'], ResponseErrorCode::IMMUTABLE_FIELD),
+                    $this->messageFormatter->formatErrorMessage(ResponseErrorCode::IMMUTABLE_FIELD, 'library'),
                     400
                 );
         }
@@ -99,14 +99,14 @@ class LibraryController extends Controller
         $originalLibrary = clone $library;
         if(!$library) {
             return response()->json(
-                    $this->messageFormatter->formatErrorMessage(['library' => 'Not found.'], ResponseErrorCode::NOT_FOUND),
+                    $this->messageFormatter->formatErrorMessage(ResponseErrorCode::NOT_FOUND, 'library'),
                     400
                 );
         }
         
         if(!$this->isUserAuthorizedToUpdate($request['auth_token'], $library)) {
             return response()->json(
-                    $this->messageFormatter->formatErrorMessage(['library' => 'Unauthorized action.'], ResponseErrorCode::UNAUTHORIZED),
+                    $this->messageFormatter->formatErrorMessage(ResponseErrorCode::UNAUTHORIZED, 'library'),
                     400
                 );
         }
