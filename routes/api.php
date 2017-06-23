@@ -39,4 +39,8 @@ Route::group(['prefix' => 'v1'], function() {
     Route::put('libraries/{id}/books', 'Api\LibraryBooksController@addBook')
             ->name('api.v1.libraries.add-book')
             ->where('id', '[0-9]+');
+    Route::delete('libraries/{id}/books/{book_id}', 'Api\LibraryBooksController@removeBook')
+            ->name('api.v1.libraries.remove-book')
+            ->where('id', '[0-9]+')
+            ->where('book_id', '[0-9]+');
 });

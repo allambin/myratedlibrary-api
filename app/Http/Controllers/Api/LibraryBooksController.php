@@ -79,6 +79,47 @@ class LibraryBooksController extends Controller
         return response(null, 204);
     }
     
+    public function removeBook(Request $request, $id, $book_id)
+    {
+        $library = \App\Library::find($id);
+        if(!$library) {
+            return response()->json(
+                    $this->messageFormatter->formatErrorMessage(ResponseErrorCode::NOT_FOUND, 'library'),
+                    404
+                );
+        }
+        
+        $book = \App\Book::find($book_id);
+        if(!$book) {
+            return response()->json(
+                    $this->messageFormatter->formatErrorMessage(ResponseErrorCode::NOT_FOUND, 'book'),
+                    404
+                );
+        }
+        
+        $user = AuthByToken::user(\App\AuthToken::where('token', $request['auth_token'])->firstOrFail());
+        if(!$user->canEditBook($book)) {
+            return response()->json(
+                    $this->messageFormatter->formatErrorMessage(ResponseErrorCode::UNAUTHORIZED, 'book'),
+                    401
+                );
+        }
+        
+        if(!$user->canEditLibrary($library)) {
+            return response()->json(
+                    $this->messageFormatter->formatErrorMessage(ResponseErrorCode::UNAUTHORIZED, 'library'),
+                    401
+                );
+        }
+        
+        LibraryBooks::where([
+            'library_id' => $id,
+            'book_id' => $book_id
+        ])->delete();
+        
+        return response(null, 204);
+    }
+    
     /**
      * Get a validator for an incoming login request.
      *

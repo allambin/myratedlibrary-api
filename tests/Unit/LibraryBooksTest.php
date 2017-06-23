@@ -168,4 +168,108 @@ class LibraryBooksTest extends TestCase
             ]
         ]);
     }
+    
+    public function testShouldRemoveBookFromLibrary()
+    {
+        $response = $this->delete(route('api.v1.libraries.remove-book', [
+            'library_id' => $this->library->id,
+            'book_id' => $this->book->id
+        ]), [
+            'auth_token' => $this->token,
+        ]);
+        
+        $response->assertStatus(204);
+    }
+    
+    public function testShouldFailToRemoveBookFromLibraryWithNotFoundLibrary()
+    {
+        $response = $this->delete(route('api.v1.libraries.remove-book', [
+            'library_id' => 99,
+            'book_id' => $this->book->id
+        ]), [
+            'auth_token' => $this->token,
+        ]);
+        
+        $response->assertExactJson([
+            'code' => 404,
+            'message' => 'The resource was not found.',
+            'errors' => [
+                'library' => 'Not found.'
+            ]
+        ]);
+    }
+    
+    public function testShouldFailToRemoveBookFromLibraryWithNotFoundBook()
+    {
+        $response = $this->delete(route('api.v1.libraries.remove-book', [
+            'library_id' => $this->library->id,
+            'book_id' => 99
+        ]), [
+            'auth_token' => $this->token,
+        ]);
+        
+        $response->assertExactJson([
+            'code' => 404,
+            'message' => 'The resource was not found.',
+            'errors' => [
+                'book' => 'Not found.'
+            ]
+        ]);
+    }
+    
+    public function testShouldFailToRemoveBookFromOtherUserLibrary()
+    {
+        $user = \App\User::create([
+            'email' => 'test2@email.com',
+            'password' => 'password'
+        ]);
+        
+        $library = \App\Library::create([
+            'name' => 'Other user library',
+            'user_id' => $user->id
+        ]);
+        
+        $response = $this->delete(route('api.v1.libraries.remove-book', [
+            'library_id' => $library->id,
+            'book_id' => $this->book->id
+        ]), [
+            'auth_token' => $this->token,
+        ]);
+        
+        $response->assertExactJson([
+            'code' => 401,
+            'message' => 'You are not authorized to perform this action.',
+            'errors' => [
+                'library' => 'Unauthorized action.'
+            ]
+        ]);
+    }
+    
+    public function testShouldFailToRemoveOtherUserBookFromLibrary()
+    {
+        $user = \App\User::create([
+            'email' => 'test2@email.com',
+            'password' => 'password'
+        ]);
+        
+        $book = \App\Book::create([
+            'title' => 'Other user book',
+            'user_id' => $user->id
+        ]);
+        
+        $response = $this->delete(route('api.v1.libraries.remove-book', [
+            'library_id' => $this->library->id,
+            'book_id' => $book->id
+        ]), [
+            'auth_token' => $this->token,
+        ]);
+        
+        $response->assertExactJson([
+            'code' => 401,
+            'message' => 'You are not authorized to perform this action.',
+            'errors' => [
+                'book' => 'Unauthorized action.'
+            ]
+        ]);
+    }
 }
