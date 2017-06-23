@@ -167,7 +167,7 @@ class BookTest extends TestCase
         ]);
         $this->assertEquals(2, \App\Author::count());
     }
-//    
+    
     public function testShouldFailUpdateOtherUserBook()
     {
         \App\User::unguard();
@@ -200,13 +200,89 @@ class BookTest extends TestCase
         ]);
     }
     
-    public function testShouldFailUpdatWithUnknownBook()
+    public function testShouldFailUpdateWithUnknownBook()
     {
         \App\Book::reguard();
         $response = $this->put(route('api.v1.books.update', ['id' => 99]), [
             'auth_token' => $this->token,
             'title' => 'Five Little Pigs - updated',
             'comment' => 'Nice one - updated'
+        ]);
+        
+        $response->assertExactJson([
+            'code' => 404,
+            'message' => 'The resource was not found.',
+            'errors' => [
+                'book' => 'Not found.'
+            ]
+        ]);
+    }
+    
+    public function testShouldDeleteBook()
+    {
+        $book = \App\Book::create([
+            'title' => 'Five Little Pigs',
+            'comment' => 'Nice one',
+            'user_id' => $this->user->id
+        ]);
+        $book->authors()->save(\App\Author::create([
+            'name' => 'Agatha Christie'
+        ]));
+        $book->libraries()->save(\App\Library::create([
+            'name' => 'Hercule Poirot',
+            'user_id' => $this->user->id
+        ]));
+        $this->assertEquals(1, \App\Book::count());
+        $this->assertEquals(1, \App\Author::count());
+        $this->assertEquals(1, \App\Library::count());
+        $this->assertEquals(1, \App\LibraryBooks::count());
+        $this->assertEquals(1, \App\AuthorBooks::count());
+        
+        $response = $this->delete(route('api.v1.books.destroy', ['id' => $book->id]), [
+            'auth_token' => $this->token,
+        ]);
+        
+        $this->assertEquals(0, \App\Book::count());
+        $this->assertEquals(1, \App\Author::count());
+        $this->assertEquals(1, \App\Library::count());
+        $this->assertEquals(0, \App\LibraryBooks::count());
+        $this->assertEquals(0, \App\AuthorBooks::count());
+    }
+    
+    public function testShouldFailDeleteOtherUserBook()
+    {
+        \App\User::unguard();
+        $user2 = \App\User::create([
+            'id' => 4,
+            'email' => 'test2@email.com',
+            'password' => 'password'
+        ]);
+        
+        $book = \App\Book::create([
+            'id' => 30,
+            'title' => 'Five Little Pigs',
+            'comment' => 'Nice one',
+            'user_id' => $user2->id
+        ]);
+        
+        $response = $this->delete(route('api.v1.books.destroy', ['id' => $book->id]), [
+            'auth_token' => $this->token,
+        ]);
+        
+        $response->assertExactJson([
+            'code' => 401,
+            'message' => 'You are not authorized to perform this action.',
+            'errors' => [
+                'book' => 'Unauthorized action.'
+            ]
+        ]);
+    }
+    
+    public function testShouldFailDeleteWithUnknownBook()
+    {
+        \App\Book::reguard();
+        $response = $this->delete(route('api.v1.books.destroy', ['id' => 99]), [
+            'auth_token' => $this->token,
         ]);
         
         $response->assertExactJson([

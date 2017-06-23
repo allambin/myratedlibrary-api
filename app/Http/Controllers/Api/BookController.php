@@ -90,6 +90,36 @@ class BookController extends Controller
     }
     
     /**
+     * Remove the specified resource from storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function destroy(Request $request, $id)
+    {
+        $book = Book::find($id);
+        if(!$book) {
+            return response()->json(
+                    $this->messageFormatter->formatErrorMessage(ResponseErrorCode::NOT_FOUND, 'book'),
+                    404
+                );
+        }
+        
+        $user = AuthByToken::user(\App\AuthToken::where('token', $request['auth_token'])->firstOrFail());
+        if(!$user->canEditBook($book)) {
+            return response()->json(
+                    $this->messageFormatter->formatErrorMessage(ResponseErrorCode::UNAUTHORIZED, 'book'),
+                    400
+                );
+        }
+        
+        $book->delete();
+
+        return response(null, 204);
+    }
+    
+    /**
      * Get a validator for an incoming login request.
      *
      * @param  array  $data

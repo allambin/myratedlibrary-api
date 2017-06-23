@@ -25,6 +25,7 @@ Route::group(['prefix' => 'v1'], function() {
         'names' => [
             'store' => 'api.v1.books.store',
             'update' => 'api.v1.books.update',
+            'destroy' => 'api.v1.books.destroy',
         ]
     ]);
     

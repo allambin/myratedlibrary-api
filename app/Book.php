@@ -3,6 +3,7 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Listeners\BookDeletedListener;
 
 class Book extends Model
 {
@@ -12,6 +13,15 @@ class Book extends Model
     
     protected $guarded = [
         'id'
+    ];
+    
+    /**
+     * The event map for the model.
+     *
+     * @var array
+     */
+    protected $events = [
+        'deleted' => BookDeletedListener::class
     ];
     
     /**
