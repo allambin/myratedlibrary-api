@@ -48,7 +48,7 @@ class LibraryBooksTest extends TestCase
     
     public function testShouldAddBookToLibrary()
     {
-        $response = $this->post(route('api.v1.libraries.add-book', [
+        $response = $this->put(route('api.v1.libraries.add-book', [
             'library_id' => $this->library->id,
         ]), [
             'auth_token' => $this->token,
@@ -60,7 +60,7 @@ class LibraryBooksTest extends TestCase
     
     public function testShouldFailToAddBookToLibratyWithEmptyBookId()
     {
-        $response = $this->post(route('api.v1.libraries.add-book', [
+        $response = $this->put(route('api.v1.libraries.add-book', [
             'library_id' => $this->library->id,
         ]), [
             'auth_token' => $this->token,
@@ -79,7 +79,7 @@ class LibraryBooksTest extends TestCase
     
     public function testShouldFailToAddBookToLibratyWithNotFoundLibrary()
     {
-        $response = $this->post(route('api.v1.libraries.add-book', [
+        $response = $this->put(route('api.v1.libraries.add-book', [
             'library_id' => 99,
         ]), [
             'auth_token' => $this->token,
@@ -97,7 +97,7 @@ class LibraryBooksTest extends TestCase
     
     public function testShouldFailToAddBookToLibratyWithNotFoundBook()
     {
-        $response = $this->post(route('api.v1.libraries.add-book', [
+        $response = $this->put(route('api.v1.libraries.add-book', [
             'library_id' => $this->library->id,
         ]), [
             'auth_token' => $this->token,
@@ -125,7 +125,7 @@ class LibraryBooksTest extends TestCase
             'user_id' => $user->id
         ]);
         
-        $response = $this->post(route('api.v1.libraries.add-book', [
+        $response = $this->put(route('api.v1.libraries.add-book', [
             'library_id' => $library->id,
         ]), [
             'auth_token' => $this->token,
@@ -153,7 +153,7 @@ class LibraryBooksTest extends TestCase
             'user_id' => $user->id
         ]);
         
-        $response = $this->post(route('api.v1.libraries.add-book', [
+        $response = $this->put(route('api.v1.libraries.add-book', [
             'library_id' => $this->library->id,
         ]), [
             'auth_token' => $this->token,

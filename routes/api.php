@@ -36,7 +36,7 @@ Route::group(['prefix' => 'v1'], function() {
         ]
     ]);
     
-    Route::post('libraries/{id}/books', 'Api\LibraryBooksController@addBook')
+    Route::put('libraries/{id}/books', 'Api\LibraryBooksController@addBook')
             ->name('api.v1.libraries.add-book')
             ->where('id', '[0-9]+');
 });
