@@ -37,7 +37,7 @@ class TokenAuthentication
         }
         
         $authToken = \App\AuthToken::where('token', $request['auth_token'])->first();
-        $user = \App\User::where('id', $authToken->user_id);
+        $user = $authToken ? \App\User::where('id', $authToken->user_id) : false;
         
         if(!$authToken || !$user) {
             return response()->json(
