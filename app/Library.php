@@ -3,6 +3,7 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Listeners\LibraryDeletingListener;
 
 class Library extends Model
 {
@@ -28,4 +29,13 @@ class Library extends Model
     {
         return $this->belongsToMany('App\Book', 'library_books');
     }
+    
+    /**
+     * The event map for the model.
+     *
+     * @var array
+     */
+    protected $events = [
+        'deleting' => LibraryDeletingListener::class
+    ];
 }

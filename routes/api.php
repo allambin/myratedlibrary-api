@@ -33,6 +33,7 @@ Route::group(['prefix' => 'v1'], function() {
         'names' => [
             'store' => 'api.v1.libraries.store',
             'update' => 'api.v1.libraries.update',
+            'destroy' => 'api.v1.libraries.destroy',
         ]
     ]);
     

@@ -203,4 +203,91 @@ class LibraryTest extends TestCase
             ]
         ]);
     }
+    
+    public function testShouldDeleteLibrary()
+    {
+        $library = \App\Library::create([
+            'name' => 'Hercule Poirot',
+            'user_id'=> $this->user->id,
+        ]);
+        $this->assertEquals(1, \App\Library::count());
+        
+        $book1 = \App\Book::create([
+            'title' => 'Book 1',
+            'user_id'=> $this->user->id,
+        ]);
+        $book2 = \App\Book::create([
+            'title' => 'Book 2',
+            'user_id'=> $this->user->id,
+        ]);
+        $this->assertEquals(2, \App\Book::count());
+        
+        \App\LibraryBooks::create([
+            'library_id' => $library->id,
+            'book_id' => $book1->id
+        ]);
+        \App\LibraryBooks::create([
+            'library_id' => $library->id,
+            'book_id' => $book2->id
+        ]);
+        $this->assertEquals(2, \App\LibraryBooks::count());
+        
+        $response = $this->delete(route('api.v1.libraries.destroy', [
+            'library_id' => $library->id,
+        ]), [
+            'auth_token' => $this->token,
+        ]);
+        
+        $this->assertEquals(0, \App\Library::count());
+        $this->assertEquals(0, \App\LibraryBooks::count());
+        $this->assertEquals(0, \App\LibraryBooks::count());
+        $this->assertEquals(2, \App\Book::count());
+        $response->assertStatus(204);
+    }
+    
+    public function testShouldFailDeleteOtherUserLibrary()
+    {
+        $user2 = \App\User::create([
+            'id' => 4,
+            'email' => 'test2@email.com',
+            'password' => 'password'
+        ]);
+        
+        $library = \App\Library::create([
+            'id' => 30,
+            'name' => 'Fantasy',
+            'user_id' => $user2->id
+        ]);
+        
+        $response = $this->delete(route('api.v1.libraries.destroy', [
+            'library_id' => $library->id,
+        ]), [
+            'auth_token' => $this->token,
+        ]);
+        
+        $response->assertExactJson([
+            'code' => 401,
+            'message' => 'You are not authorized to perform this action.',
+            'errors' => [
+                'library' => 'Unauthorized action.'
+            ]
+        ]);
+    }
+    
+    public function testShouldFailDeleteWithUnknownLibrary()
+    {
+        $response = $this->delete(route('api.v1.libraries.destroy', [
+            'library_id' => 99,
+        ]), [
+            'auth_token' => $this->token,
+        ]);
+        
+        $response->assertExactJson([
+            'code' => 404,
+            'message' => 'The resource was not found.',
+            'errors' => [
+                'library' => 'Not found.'
+            ]
+        ]);
+    }
 }

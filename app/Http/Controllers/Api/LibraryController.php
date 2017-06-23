@@ -118,6 +118,35 @@ class LibraryController extends Controller
     }
     
     /**
+     * Remove the specified resource from storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function destroy(Request $request, $id)
+    {
+        $library = \App\Library::find($id);
+        if(!$library) {
+            return response()->json(
+                    $this->messageFormatter->formatErrorMessage(ResponseErrorCode::NOT_FOUND, 'library'),
+                    404
+                );
+        }
+        
+        if(!$this->isUserAuthorizedToUpdate($request['auth_token'], $library)) {
+            return response()->json(
+                    $this->messageFormatter->formatErrorMessage(ResponseErrorCode::UNAUTHORIZED, 'library'),
+                    401
+                );
+        }
+        
+        $library->delete();
+
+        return response(null, 204);
+    }
+    
+    /**
      * Get a validator for an incoming request.
      *
      * @param  array  $data
