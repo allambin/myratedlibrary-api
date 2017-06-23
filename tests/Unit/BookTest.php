@@ -58,12 +58,38 @@ class BookTest extends TestCase
         $response = $this->post(route('api.v1.books.store'), [
             'auth_token' => $this->token,
             'title' => 'Five Little Pigs',
+            'authors' => 'Agatha Christie',
             'comment' => 'Nice one'
         ]);
         
         $this->assertEquals(200, $response->status());
-        $response->assertJsonFragment([
+        $response->assertJson([
             'title' => 'Five Little Pigs',
+            'authors' => [
+                ['name' => 'Agatha Christie']
+            ],
+            'comment' => 'Nice one'
+        ]);
+        $this->assertEquals(1, \App\Book::count());
+    }
+    
+    public function testShouldCreateBookWithMultipleAuthors()
+    {
+        \App\Book::reguard();
+        $response = $this->post(route('api.v1.books.store'), [
+            'auth_token' => $this->token,
+            'title' => 'Five Little Pigs',
+            'authors' => ['Agatha Christie', 'Miss Marple'],
+            'comment' => 'Nice one'
+        ]);
+        
+        $this->assertEquals(200, $response->status());
+        $response->assertJson([
+            'title' => 'Five Little Pigs',
+            'authors' => [
+                ['name' => 'Agatha Christie'],
+                ['name' => 'Miss Marple'],
+            ],
             'comment' => 'Nice one'
         ]);
         $this->assertEquals(1, \App\Book::count());
@@ -74,6 +100,7 @@ class BookTest extends TestCase
         \App\Book::reguard();
         $response = $this->post(route('api.v1.books.store'), [
             'auth_token' => $this->token,
+            'authors' => ['Agatha Christie'],
             'comment' => 'Nice one'
         ]);
         
@@ -89,6 +116,27 @@ class BookTest extends TestCase
         ]);
     }
     
+    public function testShouldFailCreateBookWithEmptyAuthor()
+    {        
+        \App\Book::reguard();
+        $response = $this->post(route('api.v1.books.store'), [
+            'auth_token' => $this->token,
+            'title' => 'Hello World',
+            'comment' => 'Nice one'
+        ]);
+        
+        $this->assertEquals(400, $response->status());
+        $response->assertExactJson([
+            'code' => 400,
+            'message' => 'Validation failed.',
+            'errors' => [
+                'authors' => [
+                    'The authors field is required.'
+                ]
+            ]
+        ]);
+    }
+    
     public function testShouldUpdateBook()
     {
         $book = \App\Book::create([
@@ -97,22 +145,30 @@ class BookTest extends TestCase
             'comment' => 'Nice one',
             'user_id' => $this->user->id
         ]);
+        $book->authors()->save(\App\Author::create([
+            'name' => 'Agatha Christie'
+        ]));
         
         \App\Book::reguard();
         $response = $this->put(route('api.v1.books.update', ['id' => $book->id]), [
             'auth_token' => $this->token,
             'title' => 'Five Little Pigs - updated',
+            'authors' => 'Miss Marple',
             'comment' => 'Nice one - updated'
         ]);
         
         $response->assertJsonFragment([
             'id' => 30,
             'title' => 'Five Little Pigs - updated',
+            'authors' => [
+                ['name' => 'Miss Marple']
+            ],
             'comment' => 'Nice one - updated'
         ]);
+        $this->assertEquals(2, \App\Author::count());
     }
-    
-    public function testShouldFailUpdatOtherUsereBook()
+//    
+    public function testShouldFailUpdateOtherUserBook()
     {
         \App\User::unguard();
         $user2 = \App\User::create([

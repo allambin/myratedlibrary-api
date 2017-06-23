@@ -26,7 +26,7 @@ class BookController extends Controller
      */
     public function store(Request $request)
     {
-        $validation = $this->validator($request->all());
+        $validation = $this->validator($request->all(), 'create');
         if ($validation->fails()) {
             return response()->json(
                     $this->messageFormatter->formatErrorMessage(ResponseErrorCode::VALIDATION_FAILED, $validation->messages()),
@@ -34,11 +34,14 @@ class BookController extends Controller
                 );
         }
         
-        $book = new Book($request->all(), ['except' => ['auth_token']]);
+        $book = new Book($request->all(), ['except' => ['auth_token', 'authors']]);
         $book->user_id = AuthByToken::user(\App\AuthToken::where('token', $request['auth_token'])->firstOrFail())->id;
         $book->save();
         
-        return response()->json($book, 200);
+        $authors = $this->getAuthorsFromRequest($request);
+        $book->authors()->saveMany($authors);
+        
+        return response()->json($book->formatJson(), 200);
     }
     
     /**
@@ -74,10 +77,16 @@ class BookController extends Controller
                 );
         }
         
-        $book->fill($request->all(), ['except' => ['auth_token']]);
+        $book->fill($request->all(), ['except' => ['auth_token', 'authors']]);
         $book->save();
         
-        return response()->json($book, 200);
+        if(!empty($request['authors'])) {
+            $book->authors()->detach();
+            $authors = $this->getAuthorsFromRequest($request);
+            $book->authors()->saveMany($authors);
+        }
+        
+        return response()->json($book->formatJson(), 200);
     }
     
     /**
@@ -86,10 +95,49 @@ class BookController extends Controller
      * @param  array  $data
      * @return \Illuminate\Contracts\Validation\Validator
      */
-    protected function validator(array $data)
+    protected function validator(array $data, $scenario = null)
     {
-        return Validator::make($data, [
-            'title' => 'required'
-        ]);
+        switch ($scenario) {
+            case 'create':
+                $rules = [
+                    'title' => 'required',
+                    'authors' => 'required'
+                ];
+                break;
+            default:
+                $rules = [
+                    'title' => 'required'
+                ];
+                break;
+        }
+        
+        return Validator::make($data, $rules);
+    }
+    
+    /**
+     * 
+     * @param Request $request
+     */
+    protected function getAuthorsFromRequest(Request $request)
+    {
+        $authors = [];
+        if(is_array($request['authors'])) {
+            foreach ($request['authors'] as $name) {
+                $author = \App\Author::where('name', $name)->first();
+                if(!$author) {
+                    $authors[] = new \App\Author([
+                        'name' => $name
+                    ]);
+                } else {
+                    $authors[] = $author;
+                }
+            }
+        } else {
+            $authors[] = new \App\Author([
+                'name' => $request['authors']
+            ]);
+        }
+        
+        return $authors;
     }
 }
