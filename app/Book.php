@@ -13,4 +13,13 @@ class Book extends Model
     protected $guarded = [
         'id'
     ];
+
+    /**
+     * Relationship with Library
+     * @return type
+     */
+    public function libraries()
+    {
+        return $this->belongsToMany('App\Library', 'library_books');
+    }
 }

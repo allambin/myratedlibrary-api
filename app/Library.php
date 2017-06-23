@@ -20,4 +20,12 @@ class Library extends Model
         'user_id' => 'integer',
     ];
 
+    /**
+     * Relationship with Book
+     * @return type
+     */
+    public function books()
+    {
+        return $this->belongsToMany('App\Book', 'library_books');
+    }
 }
