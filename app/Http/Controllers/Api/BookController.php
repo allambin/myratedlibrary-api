@@ -197,19 +197,10 @@ class BookController extends Controller
         $authors = [];
         if(is_array($request['authors'])) {
             foreach ($request['authors'] as $name) {
-                $author = \App\Author::where('name', $name)->first();
-                if(!$author) {
-                    $authors[] = new \App\Author([
-                        'name' => $name
-                    ]);
-                } else {
-                    $authors[] = $author;
-                }
+                $authors[] = \App\Author::firstOrNew(['name' => $name]);
             }
         } else {
-            $authors[] = new \App\Author([
-                'name' => $request['authors']
-            ]);
+            $authors[] = \App\Author::firstOrNew(['name' => $request['authors']]);
         }
         
         return $authors;
