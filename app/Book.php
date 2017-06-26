@@ -26,10 +26,10 @@ class Book extends Model
      *
      * @var array
      */
-    protected $events = [
-        'deleted' => BookDeletedListener::class,
-        'updated' => BookUpdatedListener::class
-    ];
+//    protected $events = [
+//        'deleted' => BookDeletedListener::class,
+//        'updated' => BookUpdatedListener::class
+//    ];
     
     /**
      * Relationship with Library

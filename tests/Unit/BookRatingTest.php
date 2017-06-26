@@ -158,4 +158,63 @@ class BookRatingTest extends TestCase
             'rating' => 4.5
         ]);
     }
+    
+    public function testShouldUpdateAuthorRatingWhenDeletingBook()
+    {        
+        $book1 = \App\Book::create([
+            'title' => 'Murder on the Orient Express',
+            'comment' => 'Nice one',
+            'user_id' => $this->user->id,
+        ]);
+        $book2 = \App\Book::create([
+            'title' => 'Lord Edwagre dies...',
+            'comment' => 'Nice one',
+            'user_id' => $this->user->id,
+        ]);
+        
+        $book1->authors()->save($this->author);
+        $book2->authors()->save($this->author);
+        
+        $this->put(route('api.v1.books.rate', ['id' => $book1->id]), [
+            'auth_token' => $this->token,
+            'rating' => 3.5,
+        ]);
+        
+        $this->put(route('api.v1.books.rate', ['id' => $book2->id]), [
+            'auth_token' => $this->token,
+            'rating' => 2,
+        ]);
+        
+        $response = $this->put(route('api.v1.books.rate', ['id' => $this->book->id]), [
+            'auth_token' => $this->token,
+            'rating' => 4.5,
+        ]);
+        
+        $response->assertJson([
+            'title' => 'Five Little Pigs',
+            'authors' => [
+                ['name' => 'Agatha Christie', 'rating' => 3.33333333333333]
+            ],
+            'comment' => 'Nice one',
+            'rating' => 4.5
+        ]);
+        
+        $this->delete(route('api.v1.books.destroy', ['id' => $this->book->id]), [
+            'auth_token' => $this->token,
+        ]);
+        
+        $response = $this->put(route('api.v1.books.rate', ['id' => $book2->id]), [
+            'auth_token' => $this->token,
+            'rating' => 2,
+        ]);
+        
+        $response->assertJson([
+            'title' => 'Lord Edwagre dies...',
+            'authors' => [
+                ['name' => 'Agatha Christie', 'rating' => 2.75]
+            ],
+            'comment' => 'Nice one',
+            'rating' => 2
+        ]);
+    }
 }
