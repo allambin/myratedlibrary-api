@@ -11,7 +11,7 @@ class Author extends Model
     ];
     
     protected $visible = [
-        'name'
+        'name', 'rating'
     ];
     
     /**

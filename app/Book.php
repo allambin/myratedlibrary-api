@@ -4,6 +4,7 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 use App\Listeners\BookDeletedListener;
+use App\Listeners\BookUpdatedListener;
 
 class Book extends Model
 {
@@ -26,7 +27,8 @@ class Book extends Model
      * @var array
      */
     protected $events = [
-        'deleted' => BookDeletedListener::class
+        'deleted' => BookDeletedListener::class,
+        'updated' => BookUpdatedListener::class
     ];
     
     /**
@@ -55,7 +57,10 @@ class Book extends Model
     {
         $authors = [];
         foreach($this->authors as $author) {
-            $authors[] = ['name' => $author->name];
+            $authors[] = [
+                'name' => $author->name,
+                'rating' => $author->rating,
+            ];
         }
         $this->authors = $authors;
         return $this;

@@ -34,7 +34,7 @@ class BookController extends Controller
                 );
         }
         
-        $book = new Book($request->all(), ['except' => ['auth_token', 'authors']]);
+        $book = new Book($request->all(), ['except' => ['auth_token', 'authors', 'rating']]);
         $book->user_id = AuthByToken::user(\App\AuthToken::where('token', $request['auth_token'])->firstOrFail())->id;
         $book->save();
         
@@ -154,6 +154,8 @@ class BookController extends Controller
         
         $book->rating = $request['rating'];
         $book->save();
+        
+        $book = $book->fresh();
 
         return response($book->formatJson(), 200);
     }

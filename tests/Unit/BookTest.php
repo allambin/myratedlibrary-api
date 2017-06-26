@@ -161,7 +161,7 @@ class BookTest extends TestCase
             'id' => 30,
             'title' => 'Five Little Pigs - updated',
             'authors' => [
-                ['name' => 'Miss Marple']
+                ['name' => 'Miss Marple', 'rating' => "0.0"]
             ],
             'comment' => 'Nice one - updated'
         ]);
