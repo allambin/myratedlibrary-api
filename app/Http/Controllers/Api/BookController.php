@@ -120,6 +120,45 @@ class BookController extends Controller
     }
     
     /**
+     * Rate the resource.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function rate(Request $request, $id)
+    {
+        $validation = $this->validator($request->all(), 'rate');
+        if ($validation->fails()) {
+            return response()->json(
+                    $this->messageFormatter->formatErrorMessage(ResponseErrorCode::VALIDATION_FAILED, $validation->messages()),
+                    400
+                );
+        }
+        
+        $book = Book::find($id);
+        if(!$book) {
+            return response()->json(
+                    $this->messageFormatter->formatErrorMessage(ResponseErrorCode::NOT_FOUND, 'book'),
+                    404
+                );
+        }
+        
+        $user = AuthByToken::user(\App\AuthToken::where('token', $request['auth_token'])->firstOrFail());
+        if(!$user->canEditBook($book)) {
+            return response()->json(
+                    $this->messageFormatter->formatErrorMessage(ResponseErrorCode::UNAUTHORIZED, 'book'),
+                    400
+                );
+        }
+        
+        $book->rating = $request['rating'];
+        $book->save();
+
+        return response($book->formatJson(), 200);
+    }
+    
+    /**
      * Get a validator for an incoming login request.
      *
      * @param  array  $data
@@ -132,6 +171,11 @@ class BookController extends Controller
                 $rules = [
                     'title' => 'required',
                     'authors' => 'required'
+                ];
+                break;
+            case 'rate':
+                $rules = [
+                    'rating' => 'required|numeric|between:0,5',
                 ];
                 break;
             default:

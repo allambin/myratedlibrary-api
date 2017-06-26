@@ -15,6 +15,11 @@ class Book extends Model
         'id'
     ];
     
+    protected $casts = [
+        'id' => 'integer',
+        'user_id' => 'integer',
+    ];
+    
     /**
      * The event map for the model.
      *
